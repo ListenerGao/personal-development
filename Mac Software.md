@@ -9,7 +9,7 @@
 
     Term2 是一款完全免费的，专为 Mac OS 用户打造的命令行应用。
     
-    安装：
+    安装方式：
     * [官网下载](https://iterm2.com/)安装   
     * 使用Homebrew命令安装： brew cask install iterm2
     
@@ -19,11 +19,13 @@
 
     Mac下大名鼎鼎的效率神器---Alfred，使用Alfred，你完全可以在手不离开键盘、完全脱离鼠标的情况下，完全操控你的Mac。你可以使用Alfred快速打开某个App，搜索想要的文件，快速搜索网络上的内容，定制特定的workflow，移动任意的文件，让系统剪切板在你的掌控之下，等等等。Alfred在某些场合下就是Mac原生软件Spotlight的完美替代品，但是其功能范围远远超过Spotlight。所以，有了Alfred，你完全可以抛弃Spotlight了。
     
-    安装：
+    安装方式：
+    
     * [官网下载](https://www.alfredapp.com/)安装，里面部分功能需要付费，也可以使用免费版提供的功能
 
     使用教程：
-    *可以参考这个教程：[高效Alfred进阶](https://juejin.cn/post/6844904062484217863)
+    
+    * 可以参考这个教程：[高效Alfred进阶](https://juejin.cn/post/6844904062484217863)
 
 
     
@@ -49,8 +51,9 @@
         eul 是一款开源应用，可以免费下载使用，它采用 SwiftUI 编写，软件十分美观，支持简体中文。
 
         安装方式：
-        *[github下载](https://github.com/gao-sun/eul/releases/latest/download/eul.app.zip)直接安装
-        *homebrew安装：brew install --cask eul
+        
+        * [github下载](https://github.com/gao-sun/eul/releases/latest/download/eul.app.zip)直接安装
+        * homebrew安装：brew install --cask eul
 
         软件效果图：
         ![eul](https://mweb-image-1258736741.cos.ap-beijing.myqcloud.com/2021/01/30/eul.jpg)
@@ -62,5 +65,6 @@
         Snipaste 是一个简单但强大的截图工具，也可以让你将截图贴回到屏幕上！
         
         安装方式：
-        *[官网下载](https://zh.snipaste.com/index.html)安装
-        *homebrew命令安装：brew install --cask snipaste
+        
+        * [官网下载](https://zh.snipaste.com/index.html)安装
+        * homebrew命令安装：brew install --cask snipaste
