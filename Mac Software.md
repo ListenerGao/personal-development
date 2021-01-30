@@ -11,10 +11,8 @@
     
     安装：
     * [官网下载](https://iterm2.com/)安装   
-    * 使用Homebrew命令安装： 
-``` brew cask install iterm2      
-```
-
+    * 使用Homebrew命令安装： brew cask install iterm2
+    
     配置：可以结合oh-my-zsh一起使用，网上有很多教程，可自行查阅。
     
 3. [**Alfred**](https://www.alfredapp.com/)（部分功能收费）
@@ -25,7 +23,7 @@
     * [官网下载](https://www.alfredapp.com/)安装，里面部分功能需要付费，也可以使用免费版提供的功能
 
     使用教程：
-    *     可以参考这个教程：[高效Alfred进阶](https://juejin.cn/post/6844904062484217863)
+    *可以参考这个教程：[高效Alfred进阶](https://juejin.cn/post/6844904062484217863)
 
 
     
