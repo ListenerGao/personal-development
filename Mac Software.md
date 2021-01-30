@@ -49,8 +49,8 @@
         eul 是一款开源应用，可以免费下载使用，它采用 SwiftUI 编写，软件十分美观，支持简体中文。
 
         安装方式：
-        *         [github下载](https://github.com/gao-sun/eul/releases/latest/download/eul.app.zip)直接安装
-        *         homebrew安装：brew install --cask eul
+        *[github下载](https://github.com/gao-sun/eul/releases/latest/download/eul.app.zip)直接安装
+        *homebrew安装：brew install --cask eul
 
         软件效果图：
         ![eul](https://mweb-image-1258736741.cos.ap-beijing.myqcloud.com/2021/01/30/eul.jpg)
@@ -62,5 +62,5 @@
         Snipaste 是一个简单但强大的截图工具，也可以让你将截图贴回到屏幕上！
         
         安装方式：
-        *             [官网下载](https://zh.snipaste.com/index.html)安装
-        *             homebrew命令安装：brew install --cask snipaste
+        *[官网下载](https://zh.snipaste.com/index.html)安装
+        *homebrew命令安装：brew install --cask snipaste
