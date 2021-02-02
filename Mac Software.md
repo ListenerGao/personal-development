@@ -11,7 +11,7 @@
     
     安装方式：
     * [官网下载](https://iterm2.com/)安装   
-    * 使用Homebrew命令安装： brew cask install iterm2
+    * 使用Homebrew命令安装： brew install --cask iterm2
     
     配置：可以结合oh-my-zsh一起使用，网上有很多教程，可自行查阅。
     
