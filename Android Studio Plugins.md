@@ -17,7 +17,7 @@
     
 4. [**JSON To Kotlin Class（JsonToKotlinClass）**](https://github.com/wuseal/JsonToKotlinClass)
 
-    JSON To Kotlin Class是一个将JSON字符串转换为Kotlin data class（Json到Kotlin）的插件，支持IDE内置系统安装，直接搜索 “Android Drawable Preview” 安装即可。
+    JSON To Kotlin Class是一个将JSON字符串转换为Kotlin data class（Json到Kotlin）的插件，支持IDE内置系统安装，直接搜索 “JsonToKotlinClass” 安装即可。
     
 5. [**WakaTime**](https://wakatime.com/dashboard)
 
