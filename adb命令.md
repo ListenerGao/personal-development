@@ -9,7 +9,7 @@
 * adb uninstall -k \<package_name> //卸载应用，保留数据和缓存文件
 * adb shell pm clear \<package_name> //清除应用数据与缓存
 * adb shell am force-stop \<package_name> //强制停止应用
-* adb shell pm list packages //列出手机安装所有应用的包名
+* adb shell pm list packages //列出设备安装所有应用的包名
 * adb shell pm list packages -3 //列出除了系统应用的第三方应用包名
 * adb shell dumpsys package \<package_name> //根据包名查看应用信息
 * adb shell dumpsys meminfo //查看内存使用情况Memory Usage
@@ -19,14 +19,20 @@
 * adb pull <remote> <local> //从设备复制文件到本地
 
 ## 查看设备信息
-* adb shell getprop ro.build.version.release //获取手机系统版本
-* adb shell getprop ro.build.version.sdk //获取手机系统api版本
-* adb shell getprop ro.product.model //获取手机设备型号
-* adb shell getprop ro.product.brand //获取手机厂商名称
-* adb shell cat /sys/class/net/wlan0/address //获取手机MAC地址
-* adb shell df //获取手机存储信息
-* adb shell wm density //获取手机物理密度
-* adb shell wm size //获取手机分辨率
+* adb shell getprop ro.build.version.release //获取设备系统版本
+* adb shell getprop ro.build.version.sdk //获取设备系统api版本
+* adb shell getprop ro.product.model //获取设备型号
+* adb shell getprop ro.product.brand //获取设备厂商名称
+* adb shell cat /sys/class/net/wlan0/address //获取设备MAC地址
+* adb shell df //获取设备存储信息
+* adb shell wm density //获取设备物理密度
+* adb shell wm size //获取设备分辨率
+* adb shell cat /proc/cpuinfo //查看设备CPU信息
+* adb shell cat /proc/meminfo //查看设备内存信息
+* adb shell cat /system/build.prop //查看更多硬件及系统属性
+    ![](https://mweb-image-1258736741.cos.ap-beijing.myqcloud.com/2021/02/09/16128754973965.jpg)
+
+
 
 ## [adb logcat](https://developer.android.com/studio/command-line/logcat?hl=zh-cn) 相关命令
 * adb logcat //查看设备所有日志
