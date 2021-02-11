@@ -68,3 +68,9 @@
         
         * [官网下载](https://zh.snipaste.com/index.html)安装
         * homebrew命令安装：brew install --cask snipaste
+
+1. **[scrcpy](https://github.com/Genymobile/scrcpy/blob/master/README.zh-Hans.md) 投屏/控制 Android 设备**
+
+    可以显示并控制通过 USB (或 TCP/IP) 连接的安卓设备，且不需要任何 root 权限。本程序支持 GNU/Linux, Windows 和 macOS。
+    
+    安装方式以及使用文档可以参考[官网文档](https://github.com/Genymobile/scrcpy/blob/master/README.zh-Hans.md)
