@@ -86,3 +86,7 @@
     | 209     | 打开音乐         |
     | 210     | 打开计算器        |
     | 220     | 降低屏幕亮度       |
+    
+## 系统页面跳转
+* adb shell am start com.android.settings/com.android.settings.Settings //跳转设置页面
+* 
