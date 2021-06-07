@@ -54,7 +54,7 @@
 * adb logcat -s TagName //仅查看该标签（TagName）日志
 * adb logcat > /Users/listenergao/Desktop/log.txt  //将日志信息输出到指定文件中
 
-## adb命令模拟按键/输入
+## adb 命令模拟按键/输入
 * adb shell input keyevent \<keycode>
     如：adb shell input keyevent 4 //相当于点击了返回键
     
@@ -89,4 +89,12 @@
     
 ## 系统页面跳转
 * adb shell am start com.android.settings/com.android.settings.Settings //跳转设置页面
-* 
+
+
+## adb 卸载预置应用
+* adb shell pm uninstall [-k] [--user USER_ID] 包名
+
+    * 卸载预置应用，无需root权限。
+    * -k 卸载应用且保留数据与缓存，如果不加 -k 则全部删除。
+    * --user 指定用户 id，Android 系统支持多个用户，默认用户只有一个，id=0。
+    * 例如，卸载360浏览器：adb shell pm uninstall -k --user 0 com.qihoo.browser
