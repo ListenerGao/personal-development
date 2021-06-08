@@ -63,7 +63,6 @@
     
     **成员：**
     
-    成员：
 
     匹配所有构造器→ <init>。
     
@@ -293,7 +292,7 @@ android.enableR8.libraries=false
 
 * resources.txt→ 资源优化记录文件，哪些资源引用了其他资源，哪些资源在使用，哪些资源被移除；
 
-**Tips：**上述文件不一定都有，R8可以在proguard-rules.pro文件添加下述配置输出对应文件：
+**Tips：** 上述文件不一定都有，R8可以在proguard-rules.pro文件添加下述配置输出对应文件：
 
 ```
 # 输出mapping.txt文件
