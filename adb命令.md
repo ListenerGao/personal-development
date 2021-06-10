@@ -1,6 +1,45 @@
 # adb 常用命令
 
+## 设备连接
+**1. USB连接**
+通过 USB 连接来正常使用 adb 需要以下步骤：
+1. 确认硬件状态正常(包括 Android 设备处于正常开机状态，USB 连接线和各种接口完好)。
+2. Android 设备的开发者选项和 USB 调试模式已开启(可以在「设置」-「开发者选项」-「USB调试」打开USB调试)。
+3. 确认设备驱动状态正常(安装ADB驱动程序)。
+4. 通过 USB 线连接好电脑和设备后确认状态。
+5. 通过 adb devices 命令查看设备连接情况。
+
+**2. WLAN连接（需要 USB 线）**
+借助 USB 通过 WiFi 连接来正常使用 adb 需要以下步骤：
+1. 将 Android 设备与要运行 adb 的电脑连接到同一个 WiFi。
+2. 将设备与电脑通过 USB 线连接(可通过 adb devices 命令查看设备连接情况)。
+3. 通过 adb tcpip 5555 命令让设备在 5555 端口监听 TCP/IP 连接。
+4. 断开 USB 连接。
+5. 找到设备的 IP 地址(可以在「设置」-「关于手机」-「状态信息」-「IP地址」查看 IP 地址)。
+6. 通过 adb connect <device-ip-address> 命令使用 IP 地址将 Android 设备与电脑连接。
+7. 通过 adb devices 命令查看设备连接情况。
+8. 使用完毕后可通过 adb disconnect <device-ip-address> 命令断开无线连接。
+
+**3. WLAN连接（不需要 USB 线）**
+**需要 root 权限。** 不借助 USB 通过 WiFi 连接来正常使用 adb 需要以下步骤：
+1. 在 Android 设备上安装一个终端模拟器(可通过[Terminal Emulator for Android Downloads](https://jackpal.github.io/Android-Terminal-Emulator/)下载)。
+2. 将 Android 设备与要运行 adb 的电脑连接到同一个 WiFi。
+3. 打开 Android 设备上的终端模拟器，在里面依次运行命令：
+```
+su
+setprop service.adb.tcp.port 5555
+```
+4. 找到设备的 IP 地址(可以在「设置」-「关于手机」-「状态信息」-「IP地址」查看 IP 地址)。
+5. 通过 adb connect <device-ip-address> 命令使用 IP 地址将 Android 设备与电脑连接。
+6. 通过 adb devices 命令查看设备连接情况。
+
+
 ## 常用命令
+* adb version //查看adb的版本信息
+* adb start-server //启动adb
+* adb kill-server //停止adb
+* adb root //以root权限执行adb命令
+* adb -p <port> start-server //制定 adb server 的网络端口；ADB默认端口为 5037。
 * adb devices  //查看连接设备
 * adb -s emulator-5554 shell //连接指定设备 emulator-5554 为设备名称
 * adb install demo.apk //安装应用
@@ -53,6 +92,8 @@
 * adb logcat //查看设备所有日志
 * adb logcat -s TagName //仅查看该标签（TagName）日志
 * adb logcat > /Users/listenergao/Desktop/log.txt  //将日志信息输出到指定文件中
+* adb wait-for-device logcat -b all -v time > /Users/listenergao/Desktop/log.txt
+    说明：wait-for-device可以去掉，主要目的是当设备连接上后自动启动抓取，没有设备也不会自动断开。-b中的b=buffer，-b all代表抓取所有buffer log，-v time是指在log中追加时间戳信息。
 
 ## adb 命令模拟按键/输入
 * adb shell input keyevent \<keycode>
