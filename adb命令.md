@@ -204,7 +204,8 @@ adb install 后面可以添加一些可选参数来控制安装 APK 的行为，
     | 输出代码                          | 含义                 | 解决方法                                                       |
     |:-----------------------------:|:------------------:|:----------------------------------------------------------:|
     | INSTALL_FAILED_ALREADY_EXISTS | 应用已经存在，或卸载了但没卸载干净。 | adb install 时使用 -r 参数，或者先 adb uninstall <packagename> 再安装。 |
-    
+    | INSTALL_FAILED_INVALID_APK | 无效的 APK 文件。 |  |
+    | INSTALL_FAILED_INVALID_URI | 无效的 APK 文件名。 | 确保 APK 文件名里无中文。 |
 
 
     
