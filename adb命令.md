@@ -260,12 +260,48 @@ adb install 后面可以添加一些可选参数来控制安装 APK 的行为，
 
 
 
+
+
 **3. 卸载应用**
+
+应用卸载的基本命令格式：
+
+    adb uninstall [-k] <package-name>
+    // <package-name> 表示应用的包名，-k 参数可选，表示卸载应用但保留数据和缓存目录。
+    
+
 **4. 清除应用数据与缓存**
+
+    adb shell pm clear <package-name>
+    // <package-name> 表示应用名包，这条命令的效果相当于在设置里的应用信息界面点击了「清除缓存」和「清除数据」。
+
 **5. 查看前台 Activity**
+
+    adb shell dumpsys activity activities | grep mFocusedActivity
+
 **6. 查看正在运行的 Services**
+
+    adb shell dumpsys activity services [<package-name>]
+    // <package-name> 参数不是必须的，指定 <package-name> 表示查看与某个包名相关的 Services，
+    不指定表示查看所有 Services。<package-name> 不一定要给出完整的包名，
+    可以只给一部分，那么所给包名相关的 Services 都会列出来。
+
 **7. 查看应用详细信息**
+
+    adb shell dumpsys package <package-name>
+    // <package-name> 表示应用包名。运行次命令的输出中包含很多信息，
+    包括 Activity Resolver Table、Registered ContentProviders、包名、userId、
+    安装后的文件资源代码等路径、版本信息、权限信息和授予状态、签名版本信息等。
+
+
 **8. 查看应用安装路径**
+
+    adb shell pm path <package-name>
+
+
+## 应用交互
+
+
 
 
 
