@@ -148,7 +148,7 @@
     * 例如，卸载360浏览器：adb shell pm uninstall -k --user 0 com.qihoo.browser
 
 
-## 应用管理
+## 应用管理相关
 **1. 查看应用列表**
 
 查看应用列表基本命令格式：
@@ -299,31 +299,356 @@ adb install 后面可以添加一些可选参数来控制安装 APK 的行为，
     adb shell pm path <package-name>
 
 
-## 应用交互
+## 应用交互相关
+
+与应用交互主要是使用 am \<command> 命令，常用的 \<command> 如下：
 
 
+| Command                         | 含义                       |
+|:-------------------------------:|:------------------------:|
+| start [options] \<intent>        | 启动 \<intent> 指定的 Activity |
+| startservice [options] \<intent> | 启动 \<intent> 指定的 Service  |
+| broadcast [options] \<intent>    | 发送 \<intent> 指定的广播        |
+| force-stop \<package-name>       | 停止 \<package-name> 相关的进程  |
+
+\<intent> 参数很灵活，和写 Android 程序时代码里的 Intent 相对应。
+
+决定 intent 对象的选项如下：
 
 
+| 参数             | 含义                                                  |
+|:--------------:|:---------------------------------------------------:|
+| -a \<action>    | 指定 action，比如 android.intent.action.VIEW             |
+| -c \<category>  | 指定 category，比如 android.intent.category.APP_CONTACTS |
+| -n \<component> | 指定完整 component 名，用于明确指定启动哪个 Activity                |
+
+\<intent> 中可以携带参数，就像写代码时的 Bundle 一样：
+
+| 参数 | 含义 |
+| :-: | :-: |
+| --esn \<extra-key> | null 值(只有 key 名) |
+| -e\|--es \<extra-key> \<extra-string-value> | string 值 |
+| --ez \<extra-key> \<extra-boolean-value> |  boolean 值 |
+| --ei \<extra-key> \<extra-int-value> | integer 值 |
+| --el \<extra-key> \<extra-long-value> | long 值 |
+| --ef \<extra-key> \<extra-float-value> | float 值 |
+| --eu \<extra-key> \<extra-uri-value> | URI |
+| --ecn \<extra-key> \<extra-component-name-value> | component name |
+| --eia \<extra-key> \<extra-int-value>[,<extra-int-value...] | integer 数组 |
+| --ela \<extra-key> \<extra-long-value>[,<extra-long-value...] | long 数组 |
+
+#### 1. 启动应用/调起 Activity
+
+    adb shell am start [options] <intent>
+    
+例如：
+
+```
+adb shell am start -a android.settings.SETTINGS                   // 打开系统设置页面
+adb shell am start -a android.intent.action.DIAL -d tel:10086     // 打开拨号页面
+adb shell am start -n com.android.mms/.ui.ConversationList        // 打开短信会话列表
+```
+
+options 是一些改变其行为的选项，支持可选参数及含义如下：
 
 
+| 参数  | 含义   |
+|:---:|:----:|
+| -D | 启用调试 |
+| -W | 等待启动完成 |
+| --start-profiler file | 启动分析器并将结果发送到 file |
+| -P file | 类似于 --start-profiler，但当应用进入空闲状态时分析停止 |
+| -R count | 重复 Activity 启动次数 |
+| -S | 启动 Activity 前强行停止目标应用 |
+| --opengl-trace | 	启用 OpenGL 函数的跟踪 |
+| --user user_id \| current | 指定要作为哪个用户运行；如果未指定，则作为当前用户运行 |
 
 
+#### 2. 调起 Service
+
+    adb shell am startservice [options] <intent>
+    
+一个典型的用例是如果设备上原本应该显示虚拟按键但是没有显示，可以试试这个：
+
+    adb shell am startservice -n com.android.systemui/.SystemUIService
+
+#### 3. 停止 Service
+
+    adb shell am stopservice [options] <intent>
+    
+#### 4. 发送广播
+
+    adb shell am broadcast [options] <INTENT>
+    
+可以向所有组件广播，也可以只向指定组件广播。
+
+```
+// 向所有组件广播 BOOT_COMPLETED
+adb shell am broadcast -a android.intent.action.BOOT_COMPLETED
+
+// 向 com.android.receiver.test/.BootCompletedReceiver 广播 BOOT_COMPLETED  
+adb shell am broadcast -a android.intent.action.BOOT_COMPLETED -n com.android.receiver.test/.BootCompletedReceiver
+```
+
+这类用法在测试的时候很实用，比如某个广播的场景很难制造，可以考虑通过这种方式来发送广播。
+
+既能发送系统预定义的广播，也能发送自定义广播。如下是部分系统预定义广播及正常触发时机（以下广播均可使用 adb 触发）：
 
 
+| action | 触发时机 |
+|:------:|:----:|
+| android.net.conn.CONNECTIVITY_CHANGE | 网络连接发生变化 |
+| android.intent.action.SCREEN_ON | 屏幕点亮 |
+| android.intent.action.SCREEN_OFF | 屏幕熄灭 |
+| android.intent.action.BATTERY_LOW | 电量低，会弹出电量低提示框 |
+| android.intent.action.BATTERY_OKAY | 电量恢复了 |
+| android.intent.action.BOOT_COMPLETED | 设备启动完毕 |
+| android.intent.action.DEVICE_STORAGE_LOW | 存储空间过低 |
+| android.intent.action.DEVICE_STORAGE_OK | 存储空间恢复 |
+| android.intent.action.PACKAGE_ADDED | 安装了新的应用 |
+| android.net.wifi.STATE_CHANGE | WiFi连接状态发生变化 |
+| android.net.wifi.WIFI_STATE_CHANGED | WiFi状态变为启用/关闭/正在启动/正在关闭/未知 |
+| android.intent.action.BATTERY_CHANGED | 电池电量发生变化 |
+| android.intent.action.INPUT_METHOD_CHANGED | 系统输入法发生变化 |
+| android.intent.action.ACTION_POWER_CONNECTED | 外部电源连接 |
+| android.intent.action.ACTION_POWER_DISCONNECTED | 外部电源断开连接 |
+| android.intent.action.DREAMING_STARTED | 系统开始休眠 |
+| android.intent.action.DREAMING_STOPPED | 系统停止休眠 |
+| android.intent.action.WALLPAPER_CHANGED | 壁纸发生变化 |
+| android.intent.action.HEADSET_PLUG | 插入耳机 |
+| android.intent.action.MEDIA_UNMOUNTED | 卸载外部介质 |
+| android.intent.action.MEDIA_MOUNTED | 挂载外部介质 |
+| android.os.action.POWER_SAVE_MODE_CHANGED | 省电模式开启 |
+
+#### 5. 强制停止应用
+
+    adb shell am force-stop <packagename>
+
+#### 6. 收紧内存
+
+    adb shell am send-trim-memory  <pid> <level>
+    
+**参数说明：**
+* pid: 进程 ID。
+* level:HIDDEN、RUNNING_MODERATE、BACKGROUND、RUNNING_LOW、MODERATE、RUNNING_CRITICAL、COMPLETE。
 
 
+## 文件管理相关
+
+#### 1. 从模拟器/设备下载指定的文件到计算机
+
+从模拟器/设备下载指定的文件到计算机的基本命令格式是：
+
+    adb pull <remote> [local]
+
+**参数说明：**
+* remote: 模拟器/设备里的文件路径。
+* local:计算机上的目录，参数可以省略，默认复制到当前目录。
+
+例如，将 /sdcard/music.mp4 下载到计算机的当前目录：
+
+    adb pull /sdcard/music.mp4
+
+将 /sdcard/music.mp4 下载到计算机桌面的 test 目录(目录需存在)：
+
+    adb pull /sdcard/music.mp4 /Users/ListenerGao/Desktop/test
 
 
+#### 2. 将指定的文件从计算机上传到模拟器/设备
+
+将指定的文件从计算机上传到模拟器/设备的基本命令格式是：
+
+    adb push <local> <remote>
+    
+**参数说明：**
+
+* local:计算机上的文件路径。
+* remote: 模拟器/设备里的目录。
+
+例如，将 /Users/ListenerGao/Desktop/test/music.mp4 下载到设备的/sdcard/music/目录：
+
+    adb push /Users/ListenerGao/Desktop/test/music.mp4 /sdcard/music/
 
 
+#### 3. 查看指定目录的内容
+
+列出模拟器/设备上指定目录的内容的基本命令格式是：
+
+    adb shell ls [options] <directory>
+
+\<directory> 表示指定目录，可以省略，表示列出根目录下的所有文件和目录。 adb shell ls 后面可以跟一些可选参数进行过滤查看不同的列表，可用参数及含义如下：
 
 
+| 参数  | 含义  |
+|:---:|:---:|
+|  无   |   显示目录下的所有文件和目录  |
+|  -a  |  显示目录下的所有文件(包括隐藏的)   |
+|  -i  |   显示目录下的所有文件和索引编号  |
+|  -s  |  显示目录下的所有文件和文件大小   |
+|  -n  |  显示目录下的所有文件及其 UID和 GID   |
+|  -R  |  显示目录下的所有子目录中的文件   |
+
+#### 4. 切换到目标目录
+
+    adb shell cd <directory>
+    
+第一步：执行adb shell命令； 第二步：执行cd <directory>命令切换到目标目录。
+
+#### 5. 删除文件或目录
+
+    adb shell rm [options] <files or directory>
+    
+* 第一步：执行adb shell命令； 
+* 第二步：执行rm [options] <files or directory>命令删除文件或目录。
+
+rm 后面可以跟一些可选参数进行不同的操作，可用参数及含义如下：
 
 
+| 参数  | 含义  |
+|:---:|:---:|
+|  无   |  删除文件   |
+|  -f   |   强制删除文件，系统不提示  |
+|   -r  |   强制删除指定目录中的所有文件和子目录  |
+|   -d  |   删除指定目录，即使它是一个非空目录  |
+|  -i   |   交互式删除，删除前提示  |
+
+rm -d 等同于 rmdir 命令，有些版本不包含-d 参数。
+
+#### 6. 创建目录
+
+    adb shell mkdir [options] <directory-name>
+    
+* 第一步：执行adb shell命令； 
+* 第二步：执行mkdir [options] <directory-name>命令创建目录。
+
+mkdir 后面可以跟一些可选参数进行不同的操作，可用参数及含义如下：
 
 
+| 参数  | 含义  |
+|:---:|:---:|
+| 无 | 创建指定目录 |
+| -m | 创建指定目录并赋予读写权限 |
+| -p | 创建指定目录及其父目录 |
+
+#### 7. 创建空文件或改变文件时间戳
+
+    adb shell touch [options] <file>
+    
+* 第一步：执行adb shell命令； 
+* 第二步：执行touch [options] <file>命令创建空文件或改变文件时间戳。
+
+可通过ls -n <directory> 命令查看文件的时间。
+
+#### 8. 输出当前目录路径
+
+    adb shell pwd
+
+* 第一步：执行adb shell命令； 
+* 第二步：执行pwd命令输出当前目录路径。
+
+#### 9. 复制文件或目录
+
+    adb shell cp [options] <source> <dest>
+
+* 第一步：执行adb shell命令； 
+* 第二步：执行cp [options] <source> <dest>命令复制文件和目录。
+
+**参数说明：**
+* source:源文件路径。
+* dest: 目标文件路径。
+
+#### 10. 移动或重命名文件
+
+    adb shell mv [options] <source> <dest>
+    
+* 第一步：执行adb shell命令； 
+* 第二步：执行mv [options] <source> <dest>命令移动或重命名文件。
+
+**参数说明：**
+* source:源文件路径。
+* dest: 目标文件路径。
+
+## 网络管理相关
+
+#### 1. 查看网络统计信息
 
 
+```
+// 查看网络统计信息
+adb shell netstat
+
+// 将网络统计信息输出到指定文件
+adb shell netstat><file-path>
+
+// 如：将网络日志输出到/Users/ListenerGao/Desktop/test/netstat.log中
+adb shell netstat>/Users/ListenerGao/Desktop/test/netstat.log
+```
+
+#### 2. 测试网络延迟
 
 
+```
+// ping 命令格式如下
+adb shell ping [-aAbBdDfhLnOqrRUvV] [-c count] [-i interval] [-I interface]
+[-m mark] [-M pmtudisc_option] [-l preload] [-p pattern] [-Q tos]
+[-s packetsize] [-S sndbuf] [-t ttl] [-T timestamp_option]
+[-w deadline] [-W timeout] [hop1 ...] destination
 
+// ping 一个域名，不结束的话会一直 ping 下去，可以 control + c (mac), ctrl + c (win) 停止 ping 操作。
+adb shell ping www.google.com
+
+// 指定 ping 的次数
+adb shell ping -c 4 www.google.com
+```
+
+#### 3. 通过配置文件配置和管理网络连接
+
+
+```
+adb shell netcfg [<interface> {dhcp|up|down}]    // Android 6.0 以上系统
+```
+
+#### 4. 显示、操作路由、设备、策略路由和隧道
+
+    adb shell ip [ options ] object
+    
+* options := { -V[ersion] | -s[tatistics] | -d[etails] | -r[esolve] |-f[amily] { inet | inet6 | ipx | dnet | link } |-l[oops] { maximum-addr-flush-attempts } |-o[neline] | -t[imestamp] | -b[atch] [filename] |-rc[vbuf] [size]}
+* object := { link | addr | addrlabel | route | rule | neigh | ntable |tunnel | tuntap | maddr | mroute | mrule | monitor | xfrm |netns | l2tp }
+
+options 是一些修改ip行为或者改变其输出的选项。所有的选项都是以-字符开头，分为长、短两种形式，支持的可选参数及含义如下：
+
+
+| 参数  | 含义  |
+|:---:|:---:|
+| -V,-Version | 打印ip的版本并退出 |
+| -s,-stats,-statistics | 输出更为详尽的信息(如果这个选项出现两次或者多次，输出的信息将更为详尽) |
+| -f,-family | 强调使用的协议种类(包括：inet、inet6或者link) |
+| -4 | 	是-family inet的简写 |
+| -6 | 是-family inet6的简写 |
+| -0 | 是-family link的简写 |
+| -o,-oneline | 对每行记录都使用单行输出，回行用字符代替 |
+| -r,-resolve | 查询域名解析系统，用获得的主机名代替主机IP地址 |
+
+object 是你要管理或者获取信息的对象。目前ip认识的对象包括：
+
+
+| 参数  | 含义  |
+|:---:|:---:|
+| link | 网络设备 |
+| address | 一个设备的协议(IP或者IPV6)地址 |
+| neighbour | ARP或者NDISC缓冲区条目 |
+| route | 路由表条目 |
+| rule | 路由策略数据库中的规则 |
+| maddress | 多播地址 |
+| mroute | 多播路由缓冲区条目 |
+| tuntap | 管理 TUN/TAP 设备 |
+| netns | 管理网络空间 |
+
+
+```
+// 查看 WIFI IP 地址
+adb shell ip -f inet addr show wlan0
+```
+
+
+    
