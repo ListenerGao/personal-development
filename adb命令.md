@@ -879,5 +879,170 @@ object 是你要管理或者获取信息的对象。目前ip认识的对象包�
 adb shell ip -f inet addr show wlan0
 ```
 
+## 十一、查看 Android 设备系统属性
+
+查看 Android 设备系统属性的基本命令格式是：
+
+    adb shell getprop [options]
+    
+除了查看 Android 设备系统属性之外，还可以设置系统属性，设置系统属性的基本命令格式是：
+
+    adb shell setprop <key> <value>
+    
+#### 1. 查看设备型号
+
+```
+adb shell getprop ro.product.model
+
+//输出示例
+Nexus 5
+```
+#### 2. 查看设备电池状况
+
+    adb shell dumpsys battery
+
+输出示例：
+```
+Current Battery Service state:
+  AC powered: false
+  USB powered: true
+  Wireless powered: false
+  status: 2
+  health: 2
+  present: true
+  level: 44
+  scale: 100
+  voltage: 3872
+  temperature: 280
+  technology: Li-poly
+```
+其中 scale 代表最大电量，level 代表当前电量。上面的输出表示还剩下 44% 的电量。
+
+#### 3. 查看设备屏幕分辨率
+
+    adb shell wm size
+
+输出示例
+
+    Physical size: 1080x1920
+    
+该设备屏幕分辨率为 1080px * 1920px。
+
+如果使用命令修改过，那输出可能是：
+
+```
+Physical size: 1080x1920
+Override size: 480x1024
+```
+表明设备的屏幕分辨率原本是 1080px * 1920px，当前被修改为 480px * 1024px。
+
+#### 4. 查看设备屏幕密度
+    adb shell wm density
+    
+输出示例：
+
+    Physical density: 420
+该设备屏幕密度为 420dpi。
+
+如果使用命令修改过，那输出可能是：
+
+```
+Physical density: 480
+Override density: 160
+```
+表明设备的屏幕密度原来是 480dpi，当前被修改为 160dpi。
+#### 5. 查看设备显示屏参数
+    adb shell dumpsys window displays
+    
+输出示例：
+
+```
+WINDOW MANAGER DISPLAY CONTENTS (dumpsys window displays)
+  Display: mDisplayId=0
+    init=1080x1920 420dpi cur=1080x1920 app=1080x1794 rng=1080x1017-1810x1731
+    deferred=false layoutNeeded=false
+```
+其中 mDisplayId 为 显示屏编号，init 是初始分辨率和屏幕密度，app 的高度比 init 里的要小，表示屏幕底部有虚拟按键，高度为 1920 - 1794 = 126px 合 42dp。
+#### 6. 查看设备 android_id
+    adb shell settings get secure android_id
+    
+输出示例：
+
+    51b6be48bac8c569
+#### 7. 查看设备IMEI
+在 Android 4.4 及以下版本可通过如下命令获取 IMEI：
+
+    adb shell dumpsys iphonesubinfo
+    
+输出示例：
+
+```
+Phone Subscriber Info:
+  Phone Type = GSM
+  Device ID = 860955027785041
+```
+其中的 Device ID 就是 IMEI。
+
+而在 Android 5.0 及以上版本里这个命令输出为空，得通过其它方式获取了（需要 root 权限）：
+
+```
+adb shell
+su
+service call iphonesubinfo 1
+```
+把里面的有效内容提取出来就是 IMEI 了。
+#### 8. 查看设备 Android 系统版本
+    adb shell getprop ro.build.version.release
+#### 9. 查看设备 IP 地址
+    adb shell ifconfig | grep Mask
+    
+在有的设备上这个命令没有输出，如果设备连着 WiFi，可以使用如下命令来查看局域网 IP：
+
+    adb shell ifconfig wlan0
+如果以上命令仍然不能得到期望的信息，那可以试试以下命令（部分系统版本里可用）：
+
+    adb shell netcfg
+#### 10. 查看设备 CPU 信息
+    adb shell cat /proc/cpuinfo
+#### 11. 查看设备内存信息
+    adb shell cat /proc/meminfo
+#### 12. 查看设备更多硬件与系统属性
+设备的更多硬件与系统属性可以通过如下命令查看：
+
+    adb shell cat /system/build.prop
+    
+这会输出很多信息，包括前面几个小节提到的「型号」和「Android 系统版本」等。
+
+输出里还包括一些其它有用的信息，它们也可通过 adb shell getprop <属性名> 命令单独查看，列举一部分属性如下：
+
+
+| 属性名 | 含义  |
+|:---:|:---:|
+| ro.build.version.sdk | SDK 版本 |
+| ro.build.version.release | Android 系统版本 |
+| ro.build.version.security_patch | Android 安全补丁程序级别 |
+| ro.product.model | 型号 |
+| ro.product.brand | 品牌 |
+| ro.product.name | 设备名 |
+| ro.product.board | 处理器型号 |
+| ro.product.cpu.abilist | CPU 支持的 abi 列表[节注一] |
+| persist.sys.isUsbOtgEnabled | 是否支持 OTG |
+| dalvik.vm.heapsize | 每个应用程序的内存上限 |
+| ro.sf.lcd_density | ro.sf.lcd_density |
+
+节注一：
+
+一些小厂定制的 ROM 可能修改过 CPU 支持的 abi 列表的属性名，如果用 ro.product.cpu.abilist 属性名查找不到，可以这样试试：
+
+    adb shell cat /system/build.prop | grep ro.product.cpu.abi
+
+示例输出：
+
+```
+ro.product.cpu.abi=armeabi-v7a
+ro.product.cpu.abi2=armeabi
+```
+
+
 
     
