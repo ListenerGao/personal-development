@@ -1043,6 +1043,313 @@ ro.product.cpu.abi=armeabi-v7a
 ro.product.cpu.abi2=armeabi
 ```
 
+## 十二、修改 Android 设备系统设置
+
+**注意：**修改设置之后，运行恢复命令有可能显示仍然不太正常，可以运行 adb reboot 重启设备，或手动重启。
+
+修改设置的原理主要是通过 settings 命令修改 /data/data/com.android.providers.settings/databases/settings.db 里存放的设置值。
+
+#### 1. 修改分辨率
+    adb shell wm size 480x1024
+
+表示将分辨率修改为 480px * 1024px。
+
+恢复原分辨率命令：
+
+    adb shell wm size reset
+#### 2. 修改屏幕密度
+    adb shell wm density 160
+    
+表示将屏幕密度修改为 160dpi。
+
+恢复原屏幕密度命令：
+
+    adb shell wm density reset
+#### 3. 修改显示区域
+    adb shell wm overscan 0,0,0,200
+    
+四个数字分别表示距离左、上、右、下边缘的留白像素，以上命令表示将屏幕底部 200px 留白。
+
+恢复原显示区域命令：
+
+    adb shell wm overscan reset
+#### 4. 修改关闭 USB 调试模式
+    adb shell settings put global adb_enabled 0
+
+用命令恢复不了了，毕竟关闭了 USB 调试 adb 就连接不上 Android 设备了。 去设备上手动恢复吧：「设置」-「开发者选项」-「Android 调试」。
+#### 5. 修改允许/禁止访问非 SDK API
+允许访问非 SDK API：
+
+    adb shell settings put global hidden_api_policy_pre_p_apps 1
+    adb shell settings put global hidden_api_policy_p_apps 1
+    
+禁止访问非 SDK API：
+
+    adb shell settings delete global hidden_api_policy_pre_p_apps
+    adb shell settings delete global hidden_api_policy_p_apps
+    
+不需要设备获得 Root 权限。
+
+命令最后的数字的含义：
+
+
+| 值   | 含义  |
+|:---:|:---:|
+| 0 | 禁止检测非 SDK 接口的调用。该情况下，日志记录功能被禁用，并且令 strict mode API，即 detectNonSdkApiUsage() 无效。不推荐。 |
+| 1 | 仅警告——允许访问所有非 SDK 接口，但保留日志中的警告信息，可继续使用 strick mode API。 |
+| 2 | 禁止调用深灰名单和黑名单中的接口。 |
+| 3 | 禁止调用黑名单中的接口，但允许调用深灰名单中的接口。 |
+
+#### 6. 修改状态栏和导航栏的显示隐藏
+    adb shell settings put global policy_control <key-values>
+    
+\<key-values> 可由如下几种键及其对应的值组成，格式为 \<key1>=\<value1>:\<key2>=\<value2>。
+
+
+| key | 含义  |
+|:---:|:---:|
+| immersive.full | 同时隐藏 |
+| immersive.status | 隐藏状态栏 |
+| immersive.navigation | 隐藏导航栏 |
+| immersive.preconfirms | ？ |
+
+这些键对应的值可则如下值用逗号组合：
+
+| value | 含义  |
+|:-----:|:---:|
+| apps | 所有应用 |
+| * | 	所有界面 |
+| package-name	 | 指定应用 |
+| -package-name | 排除指定应用 |
+
+例如：
+
+    adb shell settings put global policy_control immersive.full=*
+
+表示设置在所有界面下都同时隐藏状态栏和导航栏。
+
+    adb shell settings put global policy_control immersive.status=com.package1,com.package2:immersive.navigation=apps,-com.package3
+    
+表示设置在包名为 com.package1 和 com.package2 的应用里隐藏状态栏，在除了包名为 com.package3 的所有应用里隐藏导航栏。
+
+## 十三、实用功能
+
+#### 1. 屏幕截图
+截图保存到电脑：
+
+    adb exec-out screencap -p > sc.png
+    
+如果 adb 版本较老，无法使用 exec-out 命令，这时候建议更新 adb 版本。无法更新的话可以使用以下麻烦点的办法：
+
+先截图保存到设备里：
+
+    adb shell screencap -p /sdcard/sc.png
+    
+然后将 png 文件导出到电脑：
+
+    adb pull /sdcard/sc.png
+    
+可以使用 adb shell screencap -h 查看 screencap 命令的帮助信息，下面是两个有意义的参数及含义：
+
+| 参数  | 含义  |
+|:---:|:---:|
+| -p | 指定保存文件为 png 格式 |
+| -d display-id | 	指定截图的显示屏编号（有多显示屏的情况下） |
+
+实测如果指定文件名以 .png 结尾时可以省略 -p 参数；否则需要使用 -p 参数。如果不指定文件名，截图文件的内容将直接输出到 stdout。
+
+另外一种一行命令截图并保存到电脑的方法： Linux 和 Windows
+
+    adb shell screencap -p | sed "s/\r$//" > sc.png
+    
+Mac OS X
+
+    adb shell screencap -p | gsed "s/\r$//" > sc.png
+
+这个方法需要用到 gnu sed 命令，在 Linux 下直接就有，在 Windows 下 Git 安装目录的 bin 文件夹下也有。如果确实找不到该命令，可以下载 sed for Windows 并将 sed.exe 所在文件夹添加到 PATH 环境变量里。
+
+而在 Mac 下使用系统自带的 sed 命令会报错：
+
+    sed: RE error: illegal byte sequence
+    
+需要安装 gnu-sed，然后使用 gsed 命令：
+    
+    brew install gnu-sed
+
+#### 2. 录制屏幕
+录制屏幕以 mp4 格式保存到 /sdcard：
+
+    adb shell screenrecord /sdcard/filename.mp4
+    
+需要停止时按 Ctrl-C，默认录制时间和最长录制时间都是 180 秒。
+
+如果需要导出到电脑：
+
+    adb pull /sdcard/filename.mp4
+可以使用 adb shell screenrecord --help 查看 screenrecord 命令的帮助信息，下面是常见参数及含义：
+
+| 参数  | 含义  |
+|:---:|:---:|
+| --size WIDTHxHEIGHT | 视频的尺寸，比如 1280x720，默认是屏幕分辨率。 |
+| --bit-rate RATE	 | 视频的比特率，默认是 4Mbps。 |
+| --time-limit TIME | 录制时长，单位秒。 |
+| --verbose	 | 输出更多信息。 |
+
+#### 3. 查看连接过的 WiFi 密码
+**注：需要 root 权限。**
+
+    adb shell
+    su
+    cat /data/misc/wifi/*.conf
+    
+#### 4. 设置系统日期和时间
+**注：需要 root 权限。**
+
+    adb shell
+    su
+    date -s 20160823.131500
+    
+表示将系统日期和时间更改为 2016 年 08 月 23 日 13 点 15 分 00 秒。
+#### 5. 重启手机
+    adb reboot
+#### 6. 检测设备是否已 root
+    adb shell
+    su
+此时命令行提示符是 $ 则表示没有 root 权限，是 # 则表示已 root。
+#### 7. 使用 Monkey 进行压力测试
+Monkey 可以生成伪随机用户事件来模拟单击、触摸、手势等操作，可以对正在开发中的程序进行随机压力测试。
+
+简单用法：
+
+    adb shell monkey -p <packagename> -v 500
+表示向 \<packagename> 指定的应用程序发送 500 个伪随机事件。 Monkey 的详细用法参考[官方文档](https://developer.android.com/studio/test/monkey.html)。
+#### 8. 开启/关闭 WiFi
+**注：需要 root 权限。**
+
+开启 WiFi：
+    
+    adb root
+    adb shell svc wifi enable
+    
+关闭 WiFi：
+
+    adb root
+    adb shell svc wifi disable
+
+若执行成功，输出为空；若未取得 root 权限执行此命令，将执行失败，输出 Killed。
+
+## 十三、刷机相关命令
+
+#### 1. 重启到 Recovery 模式
+    adb reboot recovery
+#### 2. 从 Recovery 重启到 Android
+    adb reboot
+#### 3. 重启到 Fastboot 模式
+    adb reboot bootloader
+#### 4. 通过 sideload 更新系统
+如果我们下载了 Android 设备对应的系统更新包到电脑上，那么也可以通过 adb 来完成更新。
+
+以 Recovery 模式下更新为例：
+
+1. 重启到 Recovery 模式。
+    
+        adb reboot recovery
+        
+2. 在设备的 Recovery 界面上操作进入 Apply update-Apply from ADB。 注：不同的 Recovery 菜单可能与此有差异，有的是一级菜单就有 Apply update from ADB。
+3. 通过 adb 上传和更新系统。
+
+        adb sideload <path-to-update.zip>
+
+
+## 十四、安全相关命令
+#### 1. 启用/禁用 SELinux
+启用 SELinux：
+
+    adb root
+    adb shell setenforce 1
+    
+禁用 SELinux：
+
+    adb root
+    adb shell setenforce 0
+#### 2. 启用/禁用 dm_verity
+
+启用 dm_verity：
+
+    adb root
+    adb enable-verity
+    
+禁用 dm_verity：
+
+    adb root
+    adb disable-verity
+    
+## 十五、更多 adb shell 命令
+Android 系统是基于 Linux 内核的，所以 Linux 里的很多命令在 Android 里也有相同或类似的实现，在 adb shell 里可以调用。本文档前面的部分内容已经用到了 adb shell 命令。
+
+#### 1. 查看进程状态
+
+    adb shell ps
+
+输出信息各列含义：
+
+| 列名  | 含义  |
+|:---:|:---:|
+| USER | 所属用户 |
+| PID | 进程 ID |
+| PPID | 父进程 ID |
+| NAME | 进程名 |
+
+#### 2. 查看处理器实时状态
+    adb shell top [-m max_procs] [-n iterations] [-d delay] [-s sort_column] [-t] [-h]
+
+adb shell top 后面可以跟一些可选参数进行过滤查看不同的列表，可用参数及含义如下：
+
+
+| 参数  | 含义  |
+|:---:|:---:|
+| -m | 最多显示多少个进程 |
+| -n | 刷新多少次后退出 |
+| -d | 刷新时间间隔(单位秒，默认值5) |
+| -s | 按某列排序(可用col值：cpu, vss, rss, thr) |
+| -t | 显示线程信息 |
+| -h | 显示帮助文档 |
+
+输出信息各列含义：
+
+
+| 列名  | 含义  |
+|:---:|:---:|
+| PID	 | 进程 ID |
+| PR | 优先级 |
+| CPU% | 当前瞬间占用 CPU 百分比 |
+| S | 进程状态（R=运行，S=睡眠，T=跟踪/停止，Z=僵尸进程） |
+| #THR | 线程数 |
+| VSS	 | Virtual Set Size 虚拟耗用内存（包含共享库占用的内存） |
+| RSS	 | Resident Set Size 实际使用物理内存（包含共享库占用的内存） |
+| PCY	 | 调度策略优先级，SP_BACKGROUND/SPFOREGROUND |
+| UID	 | 进程所有者的用户 ID |
+| NAME | 进程名 |
+
+
+#### 3. 查看进程 UID
+有两种方案：
+1. adb shell dumpsys package <packagename> | grep userId= 如：
+
+         adb shell dumpsys package org.mazhuang.guanggoo | grep userId=userId=10394
+         
+2. 通过 ps 命令找到对应进程的 pid 之后 adb shell cat /proc/<pid>/status | grep Uid 如：
+    
+    ```
+    adb shell
+    gemini:/ $ ps | grep org.mazhuang.guanggoo
+    u0_a394   28635 770   1795812 78736 SyS_epoll_ 0000000000 S org.mazhuang.guanggoo
+    gemini:/ $ cat /proc/28635/status | grep Uid
+    Uid:    10394   10394   10394   10394
+    gemini:/ $
+    ```
+
+
 
 
     
