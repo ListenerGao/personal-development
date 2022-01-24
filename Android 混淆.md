@@ -1,4 +1,7 @@
 # Android 混淆
+
+**[Proguard官方文档](https://developer.android.com/studio/build/shrink-code?hl=zh-cn)**
+
 ## 混淆规则：
 1. **混淆参数设置**
 
@@ -39,7 +42,7 @@
     ```
     -keep                           # 防止类和类成员被移除或被混淆；
     -keepnames                      # 防止类和类成员被混淆；
-    -keepclassmembers                # 防止类成员被移除或被混淆；
+    -keepclassmembers               # 防止类成员被移除或被混淆；
     -keepclassmembernames           # 防止类成员被混淆；
     -keepclasseswithmembers         # 防止拥有该成员的类和类成员被移除或被混淆；
     -keepclasseswithmembernames     # 防止拥有该成员的类和类成员被混淆；
@@ -106,31 +109,38 @@
         public *;
     }
     
-    # 不混淆指定类的所有方法
-    -keep cn.listenergao.myapp.example.Test {
-        public <methods>;
+    # 保持某个类名不被混淆（类内部内容会被混淆）
+    -keep cn.listenergao.myapp.example.Test
+    
+    # 保持某个类的 类名 以及内部的所有内容不被混淆
+    -keep cn.listenergao.myapp.example.Test{*;}
+    
+    # 保持类中特定内容，而不是所有内容可以使用如下
+    -keep cn.listenergao.myapp.example.Test{    
+        <init>; #匹配所有构造器
+        <fields>;#匹配所有域
+        <methods>;#匹配所有方法
     }
     
-    # 不混淆指定类的所有字段
-    -keep cn.listenergao.myapp.example.Test {
-        public <fields>;
+    # 可以在<fields>或<methods>前面加上private 、public、native等来进一步指定不被混淆的内容
+    -keep class cn.listenergao.myapp.example.Test{
+        public <methods>;#保持该类下所有的共有方法不被混淆
+        public *;#保持该类下所有的共有内容不被混淆
+        private <methods>;#保持该类下所有的私有方法不被混淆
+        private *;#保持该类下所有的私有内容不被混淆
+        public <init>(java.lang.String);#保持该类的String类型的构造方法
     }
     
-    # 不混淆指定类的所有构造方法
-    -keep cn.listenergao.myapp.example.Test {
-        public <init>;
+    # 在方法后加入参数，限制特定的方法(经测试：仅限于构造方法可以混淆)
+    -keep class cn.listenergao.myapp.example.Test{
+        public <init>(String);
     }
     
-    # 不混淆指定参数作为形参的方法
-    -keep cn.listenergao.myapp.example.Test {
-        public <methods>(java.lang.String);
-    }
+    # 保留一个类中的内部类不被混淆需要用 $ 符号
+    # #保持 Test 类中的 MyClass 类不被混淆
+    -keep class cn.listenergao.myapp.example.Test$MyClass{*;}
     
-    # 不混淆类的特定方法
-    -keep cn.listenergao.myapp.example.Test {
-        public test(java.lang.String);
-    }
-    
+    # jni方法不可混淆，因为native方法是要完整的包名类名方法名来定义的，不能修改，否则找不到；
     # 不混淆native方法
     -keepclasseswithmembernames class * {
         native <methods>;
