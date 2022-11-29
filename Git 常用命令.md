@@ -17,7 +17,7 @@ git config --global user.email "hnthgys@gmail.com"
 ```
 
 
-* Git 指定仓库用户名邮箱设置
+* Git 指定仓库用户名邮箱设置 (在仓库路径下执行一下命令)
 
 ```
 git config user.name "ListenerGao"
