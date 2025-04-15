@@ -2,7 +2,8 @@
 
 ## UI库
 
-1. [**XUI**](https://github.com/xuexiangjys/XUI/blob/master/README_ZH.md)
+1. [**XUI**](https://github.com/xuexiangjys/XUI/blob/master/README_ZH.md) [示例Apk](assets/XUIDemo_1.2.1.apk)
+
 
 
     **简介：** 一个简洁而又优雅的Android原生UI框架，解放你的双手！在决定使用XUI前，你必须明确的一点是，此框架给出的是一整套UI的整体解决方案，如果你只是想使用其中的几个控件，那大可不必引入如此庞大的一个UI库，Github上会有更好的组件库。如果你是想拥有一套可以定制的、统一的UI整体解决方案的话，可以使用此UI框架。
@@ -38,6 +39,6 @@
     
 ## WebView
 
-1. **AgentWeb** 
+1. [**AgentWeb** ](https://github.com/Justson/AgentWeb)
 
     **简介：** AgentWeb 是一个基于的 Android WebView ，极度容易使用以及功能强大的库，提供了 Android WebView 一系列的问题解决方案 ，并且轻量和极度灵活，详细使用请参照上面的 Sample 。
