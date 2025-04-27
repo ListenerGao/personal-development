@@ -10,3 +10,4 @@
 * [**从 Android 手机提取已安装应用**](https://github.com/ListenerGao/personal-development/blob/main/从%20Android%20手机提取已安装应用.md)
 * [**Git 常用命令**](https://github.com/ListenerGao/personal-development/blob/main/Git%20常用命令.md)
 * [**Android 快速开发**](https://github.com/ListenerGao/personal-development/blob/main/Android%20快速开发.md)
+* [**仓库下载源**](https://github.com/ListenerGao/personal-development/blob/main/仓库下载源.md)
